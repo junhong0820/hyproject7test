@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring_boot.projectEx.model.ICartDAO">
+	<!-- int checkPrdInCart(HashMap<String,Object> map) -->
+	<select id="checkPrdInCart" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM cart
+		WHERE prdNo=#{prdNo} AND memId=#{memId}
+	</select>
+	<!-- void insertCart(CartDTO dto) cartNo는 자동 증가값으로 기본값 설정되어 있음
+		 특정회원이 선택한 상품이 테이블에 없는 경우
+	-->
+	<insert id="insertCart" parameterType="com.spring_boot.projectEx.dto.CartDTO">
+		INSERT INTO cart(memId, prdNo, cartQty)
+		VALUES (#{memId},#{prdNo},#{cartQty})
+	</insert>
+	<!--특정회원이 선택한 상품이 테이블에 있는 경우  
+		void updateQtyInCart(CartDTO dto)
+		SET cartQty= cartQty + #{cartQty} : 기존 cartQty값을 select해서 반환되는 결과값과 dto 필드값을 더하게 됨
+	-->	
+	<update id="updateQtyInCart" parameterType="com.spring_boot.projectEx.dto.CartDTO">
+		UPDATE cart
+		SET cartQty= cartQty + #{cartQty}
+		WHERE memId=#{memId} AND prdNo=#{prdNo}
+	</update>
+	
+	<!-- ArrayList<CartDTO> cartList(String memId) 
+		 view에 표현하기위해 필요한 정보가 cart,product 테이블에 존재함, join필요
+	-->
+	<select id="cartList" parameterType="string" 
+						  resultType="com.spring_boot.projectEx.dto.CartDTO">
+		SELECT c.cartNo,p.prdNo,p.prdImg,p.prdName,p.prdPrice,c.cartQty,c.memId
+		FROM product p, cart c
+		WHERE p.prdNo=c.prdNo AND c.memId=#{memId}
+		ORDER BY c.cartNo
+	
+	</select>
+	<!-- void deleteCart(String cartNo) -->
+	<delete id="deleteCart" parameterType="string">
+		DELETE FROM cart
+		WHERE cartNo=#{cartNo}
+	</delete>
+	
+	<!-- void updateCart(HashMap<String,Object> map) -->
+	<update id="updateCart" parameterType="hashmap">
+		UPDATE cart
+		SET cartQty=#{cartQty}
+		WHERE cartNo=#{cartNo}
+	</update>
+	
+</mapper>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

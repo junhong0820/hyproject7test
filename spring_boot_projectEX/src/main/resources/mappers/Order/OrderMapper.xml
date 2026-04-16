@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring_boot.projectEx.model.IOrderDAO">
+	<!-- public MemberDTO getMemberInfo(String memId) : 주문자 정보 반환 -->
+	<select id="getMemberInfo" parameterType="string" resultType="com.spring_boot.projectEx.dto.MemberDTO">
+		SELECT *
+		FROM member
+		WHERE memId=#{memId}	
+	</select>
+	<!-- void insertOrderInfo(OrderInfoDTO dto) -->
+	<insert id="insertOrderInfo" parameterType="com.spring_boot.projectEx.dto.OrderInfoDTO">
+		INSERT INTO order_info(ordNo, memId, ordReceiver, ordRcvZipcode,
+  								ordRcvAddress1, ordRcvAddress2, ordRcvPhone, 
+  								ordRcvMsg, ordPay)
+		VALUES(#{ordNo}, #{memId}, #{ordReceiver}, #{ordRcvZipcode},
+  					   #{ordRcvAddress1}, #{ordRcvAddress2}, #{ordRcvPhone}, 
+  					   #{ordRcvMsg},#{ordPay})		
+	</insert>
+
+	<!-- void insertOrderProduct(HashMap<String, Object> map) 
+		 cart 테이블에서 해당 정보 추출 후 order_product 테이블에 저장
+	-->
+	<insert id="insertOrderProduct" parameterType="hashmap">
+		INSERT INTO order_product(ordNo, prdNo, ordQty)
+			SELECT #{ordNo},prdNo, cartQty
+			FROM cart
+			WHERE memId=#{memId}
+	</insert>
+	
+	<!-- void deleteCartAfterOrder(String memId) -->
+	<delete id="deleteCartAfterOrder" parameterType="string">
+		DELETE FROM cart
+		WHERE memId=#{memId}
+	</delete>
+	
+	<!-- ArrayList<OrderInfoDTO> orderList(String memId) -->
+	<select id="orderList" parameterType="string" resultType="com.spring_boot.projectEx.dto.OrderInfoDTO">
+		SELECT *
+		FROM order_info
+		WHERE memId=#{memId}
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+  
